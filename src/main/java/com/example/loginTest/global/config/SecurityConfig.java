@@ -1,6 +1,6 @@
 package com.example.loginTest.global.config;
 
-import com.example.loginTest.domain.user.service.UserManagementService;
+import com.example.loginTest.domain.user.service.MemberManagementService;
 import com.example.loginTest.global.auth.filter.JwtAuthenticationFilter;
 import com.example.loginTest.global.auth.filter.JwtVerificationFilter;
 import com.example.loginTest.global.auth.handler.UsersAuthenticationFailureHandler;
@@ -27,7 +27,7 @@ public class SecurityConfig {
 
     private final RedisTemplateRepository redisTemplateRepository;
     private final JwtTokenizer jwtTokenizer;
-    private final UserManagementService userManagementService;
+    private final MemberManagementService memberManagementService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -60,12 +60,12 @@ public class SecurityConfig {
             AuthenticationManager authenticationManager = builder.getSharedObject(AuthenticationManager.class);
 
             JwtAuthenticationFilter jwtAuthenticationFilter
-                    = new JwtAuthenticationFilter(authenticationManager, redisTemplateRepository, jwtTokenizer, passwordEncoder(),userManagementService);
+                    = new JwtAuthenticationFilter(authenticationManager, redisTemplateRepository, jwtTokenizer, passwordEncoder(), memberManagementService);
             jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
             jwtAuthenticationFilter.setAuthenticationSuccessHandler(new UsersAuthenticationSuccessHandler());
             jwtAuthenticationFilter.setAuthenticationFailureHandler(new UsersAuthenticationFailureHandler());
 
-            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, userManagementService, redisTemplateRepository);
+            JwtVerificationFilter jwtVerificationFilter = new JwtVerificationFilter(jwtTokenizer, memberManagementService, redisTemplateRepository);
 
             builder
                     .addFilter(jwtAuthenticationFilter)

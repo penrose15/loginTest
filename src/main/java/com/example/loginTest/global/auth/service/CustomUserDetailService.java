@@ -1,7 +1,7 @@
 package com.example.loginTest.global.auth.service;
 
-import com.example.loginTest.domain.user.entity.Users;
-import com.example.loginTest.domain.user.service.UserManagementService;
+import com.example.loginTest.domain.user.entity.Member;
+import com.example.loginTest.domain.user.service.MemberManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,16 +13,11 @@ import java.util.NoSuchElementException;
 @RequiredArgsConstructor
 @Component
 public class CustomUserDetailService implements UserDetailsService {
-    private final UserManagementService userService;
+    private final MemberManagementService userService;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        try {
-            Users user = userService.findByEmail(email);
-            return new CustomUserDetails(user.getEmail(), user.getPassword(), user.getRoles());
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            throw e;
-        }
+        Member user = userService.findByEmail(email, new NoSuchElementException("존재하지 않는 이메일"));
+        return new CustomUserDetails(user.getEmail(), user.getPwd(), user.getRoles());
     }
 }

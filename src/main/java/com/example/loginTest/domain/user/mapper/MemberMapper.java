@@ -2,16 +2,16 @@ package com.example.loginTest.domain.user.mapper;
 
 import com.example.loginTest.domain.user.dto.UserSignUpDTO;
 import com.example.loginTest.domain.user.entity.Roles;
-import com.example.loginTest.domain.user.entity.Users;
+import com.example.loginTest.domain.user.entity.Member;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserMapper {
-    public Users toEntity(UserSignUpDTO dto) {
-        return Users.builder()
+public class MemberMapper {
+    public Member toEntity(UserSignUpDTO dto) {
+        return Member.builder()
                 .name(dto.getName())
                 .email(dto.getEmail())
-                .password(dto.getPassword())
+                .pwd(dto.getPassword())
                 .roles(Roles.USER)
                 .build();
     }

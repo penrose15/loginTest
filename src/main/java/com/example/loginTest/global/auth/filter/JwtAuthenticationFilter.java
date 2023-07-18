@@ -1,7 +1,7 @@
 package com.example.loginTest.global.auth.filter;
 
-import com.example.loginTest.domain.user.entity.Users;
-import com.example.loginTest.domain.user.service.UserManagementService;
+import com.example.loginTest.domain.user.entity.Member;
+import com.example.loginTest.domain.user.service.MemberManagementService;
 import com.example.loginTest.global.auth.dto.LoginDTO;
 import com.example.loginTest.global.auth.jwt.JwtTokenizer;
 import com.example.loginTest.global.auth.refreshtoken.RefreshToken;
@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.NoSuchElementException;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -33,7 +32,7 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     private final RedisTemplateRepository redisTemplateRepository;
     private final JwtTokenizer jwtTokenizer;
     private final PasswordEncoder passwordEncoder;
-    private final UserManagementService userManagementService;
+    private final MemberManagementService memberManagementService;
 
     @SneakyThrows
     @Override
@@ -41,14 +40,14 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         ObjectMapper objectMapper = new ObjectMapper();
         LoginDTO loginDTO = objectMapper.readValue(request.getInputStream(), LoginDTO.class);
 
-        Users users= userManagementService.findByEmail(loginDTO.getUsername(), new AuthenticationException("email not found") {
+        Member member = memberManagementService.findByEmail(loginDTO.getUsername(), new AuthenticationException("email not found") {
             @Override
             public String getMessage() {
                 return super.getMessage();
             }
         });
 
-        if(!passwordEncoder.matches(loginDTO.getPassword(), users.getPassword())) {
+        if(!passwordEncoder.matches(loginDTO.getPassword(), member.getPwd())) {
             throw new AuthenticationException("wrong password") {
                 @Override
                 public String getMessage() {

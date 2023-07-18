@@ -1,6 +1,5 @@
 package com.example.loginTest.domain.user.dto;
 
-import com.example.loginTest.domain.user.entity.Users;
 import lombok.Getter;
 
 @Getter

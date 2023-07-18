@@ -1,7 +1,7 @@
 package com.example.loginTest.global.auth.filter;
 
-import com.example.loginTest.domain.user.entity.Users;
-import com.example.loginTest.domain.user.service.UserManagementService;
+import com.example.loginTest.domain.user.entity.Member;
+import com.example.loginTest.domain.user.service.MemberManagementService;
 import com.example.loginTest.global.auth.jwt.JwtTokenizer;
 import com.example.loginTest.global.auth.service.CustomUserDetails;
 import com.example.loginTest.global.redis.RedisTemplateRepository;
@@ -21,14 +21,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.security.SignatureException;
 import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
 public class JwtVerificationFilter extends OncePerRequestFilter {
     private final JwtTokenizer jwtTokenizer;
-    private final UserManagementService userService;
+    private final MemberManagementService userService;
     private final RedisTemplateRepository redisTemplateRepository;
 
     @Override
@@ -88,12 +87,12 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
                             .orElseThrow(NoSuchElementException::new)
                             .getEmail();
 
-                    Users users = userService.findByEmail(email2, new NoSuchElementException("잘못된 토큰"));
+                    Member member = userService.findByEmail(email2, new NoSuchElementException("잘못된 토큰"));
 
-                    if(email.equals(users.getEmail())) {
+                    if(email.equals(member.getEmail())) {
                         Map<String, Object> claims = new HashMap<>();
-                        claims.put("username", users.getEmail());
-                        claims.put("roles", users.getRoles());
+                        claims.put("username", member.getEmail());
+                        claims.put("roles", member.getRoles());
                         System.out.println(">>");
                         Date expiration = jwtTokenizer.getTokenExpiration(Integer.parseInt(jwtTokenizer.getAccessTokenExpirationMinutes()));
                         String base64EncodedSecretKey = jwtTokenizer.encodeBase64SecretKey(jwtTokenizer.getSecretKey());
@@ -116,9 +115,9 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
     private void setAuthenticationToContext(Map<String, Object> claims) {
         String username = (String) claims.get("username");
 
-        Users users = userService.findByEmail(username, new NoSuchElementException("존재하지 않는 유저"));
+        Member member = userService.findByEmail(username, new NoSuchElementException("존재하지 않는 유저"));
 
-        CustomUserDetails customUserDetails = new CustomUserDetails(users.getEmail(), users.getPassword(), users.getRoles());
+        CustomUserDetails customUserDetails = new CustomUserDetails(member.getEmail(), member.getPwd(), member.getRoles());
 
         List<GrantedAuthority> authorities = new ArrayList<>();
         String roles = (String) claims.get("roles");
