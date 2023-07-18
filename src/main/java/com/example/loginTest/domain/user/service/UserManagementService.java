@@ -29,8 +29,8 @@ public class UserManagementService {
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저"));
     }
 
-    public Users findByEmail(String email) {
+    public Users findByEmail(String email, RuntimeException e) {
         return usersRepository.findByEmail(email)
-                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 유저"));
+                .orElseThrow(() -> e);
     }
 }

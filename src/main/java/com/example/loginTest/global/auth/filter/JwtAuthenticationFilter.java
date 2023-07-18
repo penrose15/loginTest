@@ -41,17 +41,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         ObjectMapper objectMapper = new ObjectMapper();
         LoginDTO loginDTO = objectMapper.readValue(request.getInputStream(), LoginDTO.class);
 
-        Users users;
-        try {
-            users = userManagementService.findByEmail(loginDTO.getUsername());
-        } catch (NoSuchElementException e) {
-            throw new AuthenticationException("email not found") {
-                @Override
-                public String getMessage() {
-                    return super.getMessage();
-                }
-            };
-        }
+        Users users= userManagementService.findByEmail(loginDTO.getUsername(), new AuthenticationException("email not found") {
+            @Override
+            public String getMessage() {
+                return super.getMessage();
+            }
+        });
 
         if(!passwordEncoder.matches(loginDTO.getPassword(), users.getPassword())) {
             throw new AuthenticationException("wrong password") {
